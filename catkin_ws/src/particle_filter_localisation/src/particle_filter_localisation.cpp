@@ -286,7 +286,7 @@ void ParticleFilter::normaliseWeights()
 
   // YOUR CODE HERE //
 
-  double sumWeights;
+  double sumWeights = 0;
 
   for(Particle particle : particles_)
   {
@@ -312,7 +312,7 @@ void ParticleFilter::estimatePose()
 
   double sumWeights;
   double x_weighted_sum, y_weighted_sum;
-  double theta_x_weightedAvg, theta_y_weightedAvg;
+  double theta_x_weighted_sum, theta_y_weighted_sum;
 
   double maxWeight = 0;
 
@@ -324,15 +324,19 @@ void ParticleFilter::estimatePose()
     x_weighted_sum += particle.weight*particle.x;
     y_weighted_sum += particle.weight*particle.y;
 
-    if (particle.weight > maxWeight)
-    {
-      maxWeight = particle.weight;
-      estimated_pose_theta = particle.theta;
-    }
+    theta_x_weighted_sum += particle.weight*std::sin(particle.theta);
+    theta_y_weighted_sum += particle.weight*std::cos(particle.theta);
+
+    // if (particle.weight > maxWeight)
+    // {
+    //   maxWeight = particle.weight;
+    //   estimated_pose_theta = particle.theta;
+    // }
   }
 
   estimated_pose_x = x_weighted_sum/sumWeights;
   estimated_pose_y = y_weighted_sum/sumWeights;
+  estimated_pose_theta = std::atan2(theta_x_weighted_sum/sumWeights,theta_y_weighted_sum/sumWeights);
 
 
   // Set the estimated pose message
@@ -515,7 +519,9 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   {
     particle.x = particle.x + (distance + randomNormal(motion_distance_noise_stddev_))*std::cos(particle.theta);
     particle.y = particle.y + (distance + randomNormal(motion_distance_noise_stddev_))*std::sin(particle.theta);
-    particle.theta = particle.theta + wrapAngle(rotation) + randomNormal(motion_rotation_noise_stddev_);
+    particle.theta = particle.theta + rotation + randomNormal(motion_rotation_noise_stddev_);
+
+    wrapAngle(particle.theta);
   }
 
 
@@ -591,8 +597,10 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
 
 
       // YOUR CODE HERE
-      double firstTerm = (1/std::sqrt(2*M_PI*std::pow(sensing_noise_stddev_,2)));
-      double secondTerm = std::exp(-1*((std::pow(particle_range-scan_range,2))/2*std::pow(sensing_noise_stddev_,2)));
+      double firstTerm = 1 / std::sqrt(2 * M_PI * std::pow(sensing_noise_stddev_, 2));
+      double numerator = std::pow(particle_range - scan_range, 2);
+      double denomenator = 2 * std::pow(sensing_noise_stddev_, 2);
+      double secondTerm = std::exp(-1 * (numerator/denomenator) );
 
       likelihood = firstTerm * secondTerm;
 
