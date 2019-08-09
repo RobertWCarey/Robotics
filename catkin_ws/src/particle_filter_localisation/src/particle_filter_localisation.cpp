@@ -258,13 +258,17 @@ void ParticleFilter::initialiseParticles()
 
   // YOUR CODE HERE //
 
+  // Calculate uniform initial weight for particles
   double initialWeight = 1.0/num_particles_;
 
+  //  Loop through particles_ vector
   for(Particle& particle : particles_)
   {
+    // Assign random value to each degree of freedom 
     particle.x = randomUniform(map_x_min_,map_x_max_);
     particle.y = randomUniform(map_y_min_,map_y_max_);
     particle.theta = randomUniform(0,2*M_PI);
+    // Assign initial weight
     particle.weight = initialWeight;
   }
 
@@ -286,15 +290,18 @@ void ParticleFilter::normaliseWeights()
 
   // YOUR CODE HERE //
 
+  // Variable to store sum of weights
   double sumWeights = 0;
 
+  // Loop through particles_ vector
   for(Particle particle : particles_)
-  {
+  { 
     sumWeights += particle.weight;
   }
 
   for(Particle& particle : particles_)
   {
+    // Load the normalised values into the vector
     particle.weight = particle.weight/sumWeights;
   }
 
@@ -310,13 +317,14 @@ void ParticleFilter::estimatePose()
   // Put the values into "estimated_pose_x", "estimated_pose_y", and "estimated_pose_theta"
   // If you just use the pose of the particle with the highest weight the maximum mark you can get for this part is 0.5
 
-  double sumWeights;
+  // YOUR CODE HERE //
+
+  // Variables to store numerators for weighted average calc
   double x_weighted_sum, y_weighted_sum;
   double theta_x_weighted_sum, theta_y_weighted_sum;
 
-  double maxWeight = 0;
-
-  // YOUR CODE HERE //
+  // Variable to store sum of weights
+  double sumWeights;
 
   for(Particle particle : particles_)
   {
