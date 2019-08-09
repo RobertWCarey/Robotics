@@ -1,0 +1,8 @@
+prefix=/home/rob/Documents/Robotics/catkin_ws/install
+
+Name: particle_filter_localisation
+Description: Description of particle_filter_localisation
+Version: 0.0.1
+Cflags: 
+Libs: -L/home/rob/Documents/Robotics/catkin_ws/install/lib 
+Requires: 
