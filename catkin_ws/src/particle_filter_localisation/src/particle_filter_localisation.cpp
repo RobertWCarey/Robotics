@@ -250,13 +250,21 @@ void ParticleFilter::initialiseParticles()
   particles_.resize(num_particles_);
 
   // You want to initialise the particles in the "particles_" vector
-  // "randomUniform(a, b)" wiill give you a random value with uniform distribution between "a" and "b"
+  // "randomUniform(a, b)" will give you a random value with uniform distribution between "a" and "b"
   // "map_x_min_", "map_x_max_", "map_y_min_", and "map_y_max_" give you the limits of the map
   // Orientation (theta) should be 0 and 2*Pi
   // You probably need to use a "." in your numbers (e.g. "1.0") when calculating the weights
 
 
   // YOUR CODE HERE //
+
+  for(Particle& particle : particles_)
+  {
+    particle.x = randomUniform(map_x_min_,map_x_max_);
+    particle.y = randomUniform(map_y_min_,map_y_max_);
+    particle.theta = randomUniform(0,2*M_PI);
+    particle.weight = 1.0/num_particles_;
+  }
 
 
   // Particles may be initialised in occupied space but the map has thin walls so it should be OK
