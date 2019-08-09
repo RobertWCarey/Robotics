@@ -310,8 +310,21 @@ void ParticleFilter::estimatePose()
   // Put the values into "estimated_pose_x", "estimated_pose_y", and "estimated_pose_theta"
   // If you just use the pose of the particle with the highest weight the maximum mark you can get for this part is 0.5
 
+  double sumWeights;
+  double x_weighted_sum, y_weighted_sum;
+  double theta_x_weightedAvg, theta_y_weightedAvg;
 
   // YOUR CODE HERE //
+
+  for(Particle particle : particles_)
+  {
+    sumWeights += particle.weight;
+    x_weighted_sum += particle.weight*particle.x;
+    y_weighted_sum += particle.weight*particle.y;
+  }
+
+  estimated_pose_x = x_weighted_sum/sumWeights;
+  estimated_pose_y = y_weighted_sum/sumWeights;
 
 
   // Set the estimated pose message
@@ -490,6 +503,12 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
 
 
   // YOUR CODE HERE
+  for(Particle& particle : particles_)
+  {
+    particle.x = particle.x + (distance + randomNormal(motion_distance_noise_stddev_))*std::cos(particle.theta);
+    particle.y = particle.y + (distance + randomNormal(motion_distance_noise_stddev_))*std::sin(particle.theta);
+  }
+
 
 
   // Overwrite the previous odometry message
