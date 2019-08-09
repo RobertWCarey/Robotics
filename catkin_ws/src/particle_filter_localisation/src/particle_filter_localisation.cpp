@@ -329,21 +329,19 @@ void ParticleFilter::estimatePose()
   for(Particle particle : particles_)
   {
     sumWeights += particle.weight;
+
     x_weighted_sum += particle.weight*particle.x;
     y_weighted_sum += particle.weight*particle.y;
 
+    // Convert to cartesian coordinates, can assume hypotenuse is 1 as cancels when arctan2()
     theta_x_weighted_sum += particle.weight*std::sin(particle.theta);
     theta_y_weighted_sum += particle.weight*std::cos(particle.theta);
-
-    // if (particle.weight > maxWeight)
-    // {
-    //   maxWeight = particle.weight;
-    //   estimated_pose_theta = particle.theta;
-    // }
   }
 
+  // Load weighted averages into the pose variables
   estimated_pose_x = x_weighted_sum/sumWeights;
   estimated_pose_y = y_weighted_sum/sumWeights;
+  // Convert cartisian back to angle before loading
   estimated_pose_theta = std::atan2(theta_x_weighted_sum/sumWeights,theta_y_weighted_sum/sumWeights);
 
 
@@ -525,10 +523,11 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   // YOUR CODE HERE
   for(Particle& particle : particles_)
   {
+    // update position and orientation of the particles based on "distance" and "rotation"
     particle.x = particle.x + (distance + randomNormal(motion_distance_noise_stddev_))*std::cos(particle.theta);
     particle.y = particle.y + (distance + randomNormal(motion_distance_noise_stddev_))*std::sin(particle.theta);
     particle.theta = particle.theta + rotation + randomNormal(motion_rotation_noise_stddev_);
-
+    // Use wrap angle to prevent angles >2*pi
     wrapAngle(particle.theta);
   }
 
@@ -605,6 +604,7 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
 
 
       // YOUR CODE HERE
+      // Update likelihood
       double firstTerm = 1 / std::sqrt(2 * M_PI * std::pow(sensing_noise_stddev_, 2));
       double numerator = std::pow(particle_range - scan_range, 2);
       double denomenator = 2 * std::pow(sensing_noise_stddev_, 2);
