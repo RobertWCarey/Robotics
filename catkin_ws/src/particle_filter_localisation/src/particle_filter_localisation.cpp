@@ -258,12 +258,14 @@ void ParticleFilter::initialiseParticles()
 
   // YOUR CODE HERE //
 
+  double initialWeight = 1.0/num_particles_;
+
   for(Particle& particle : particles_)
   {
     particle.x = randomUniform(map_x_min_,map_x_max_);
     particle.y = randomUniform(map_y_min_,map_y_max_);
     particle.theta = randomUniform(0,2*M_PI);
-    particle.weight = 1.0/num_particles_;
+    particle.weight = initialWeight;
   }
 
 
@@ -283,6 +285,18 @@ void ParticleFilter::normaliseWeights()
 
 
   // YOUR CODE HERE //
+
+  double sumWeights;
+
+  for(Particle particle : particles_)
+  {
+    sumWeights += particle.weight;
+  }
+
+  for(Particle& particle : particles_)
+  {
+    particle.weight = particle.weight/sumWeights;
+  }
 
 
 }
