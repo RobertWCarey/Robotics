@@ -314,6 +314,8 @@ void ParticleFilter::estimatePose()
   double x_weighted_sum, y_weighted_sum;
   double theta_x_weightedAvg, theta_y_weightedAvg;
 
+  double maxWeight = 0;
+
   // YOUR CODE HERE //
 
   for(Particle particle : particles_)
@@ -321,6 +323,12 @@ void ParticleFilter::estimatePose()
     sumWeights += particle.weight;
     x_weighted_sum += particle.weight*particle.x;
     y_weighted_sum += particle.weight*particle.y;
+
+    if (particle.weight > maxWeight)
+    {
+      maxWeight = particle.weight;
+      estimated_pose_theta = particle.theta;
+    }
   }
 
   estimated_pose_x = x_weighted_sum/sumWeights;
@@ -507,6 +515,7 @@ void ParticleFilter::odomCallback(const nav_msgs::Odometry& odom_msg)
   {
     particle.x = particle.x + (distance + randomNormal(motion_distance_noise_stddev_))*std::cos(particle.theta);
     particle.y = particle.y + (distance + randomNormal(motion_distance_noise_stddev_))*std::sin(particle.theta);
+    particle.theta = particle.theta + wrapAngle(rotation) + randomNormal(motion_rotation_noise_stddev_);
   }
 
 
@@ -582,6 +591,10 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
 
 
       // YOUR CODE HERE
+      double firstTerm = (1/std::sqrt(2*M_PI*std::pow(sensing_noise_stddev_,2)));
+      double secondTerm = std::exp(-1*((std::pow(particle_range-scan_range,2))/2*std::pow(sensing_noise_stddev_,2)));
+
+      likelihood = firstTerm * secondTerm;
 
 
     }
