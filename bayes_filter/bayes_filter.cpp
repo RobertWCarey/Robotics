@@ -40,16 +40,20 @@ double observationProbability(bool observation, int position)
   std::vector<int> doorPos;
   doorPos.resize(3);
 
+  // Vector for storing door positions
   doorPos = {2,4,7};
 
+  // Variable to indicate if position has a door
   bool posMatch = 0;
 
+  // Check if current position has a door
   for (int pos : doorPos)
   {
     if (pos == position)
       posMatch = 1;
   }
 
+  // Return the probability for the given observation & position
   if (observation)
   {
     if (!posMatch)
@@ -70,13 +74,14 @@ void normaliseState(std::vector<double>& state)
 {
   // Normalise the state variable so that the sum of all the probabilities is equal to 1
 
+  // Store sum of states
   double sum;
 
-  for (double state : state)
-    sum += state;
+  for (double s : state)
+    sum += s;
   
-  for (double& state : state)
-    state = state/sum;
+  for (double& s : state)
+    s /= sum;
 }
 
 void initialiseState(std::vector<double>& state)
@@ -84,10 +89,11 @@ void initialiseState(std::vector<double>& state)
   // Fill the state variable with initial probabilities
   // You may need to use a "." in your numbers (e.g. "1.0") so that the result isn't an integer
 
+  // Store probability to spread evenly across states
   double probability = 1.0/state.size();
 
-  for (double& state : state)
-    state = probability;
+  for (double& s : state)
+    s = probability;
   
   
 }
@@ -98,31 +104,20 @@ std::vector<double> updateState(const std::vector<double>& previous_state, bool 
   // All values in state are initialised with 0.
   std::vector<double> state(previous_state.size());
 
+  // Store state size
   int stateSize = state.size();
-  
-  // previous_state[0];
 
   // Motion updateState
-  for (int i = 0; i < state.size(); i++)
+  for (int i = 0; i < stateSize; i++)
   {
-    int prevPos1 = i - 1;
-    if (prevPos1 < 0)
-      prevPos1 = prevPos1 + stateSize;
-
-    int prevPos2 = prevPos1 - 1;
-    if (prevPos2 < 0 )
-      prevPos2 = prevPos2 + stateSize;
-
-    state[i] = previous_state[prevPos1]*motionProbability(motion,prevPos1,i)
-               +previous_state[prevPos2]*motionProbability(motion,prevPos2,i) 
-               + previous_state[i]*motionProbability(motion,i,i);
-
+    for (int j = 0; j < stateSize; j++)
+    {
+      state[i] += previous_state[j]*motionProbability(motion,j,i);
+    }
   }
-
-  
   
   // Observation update
-  for(int i = 0; i < state.size(); i++)
+  for (int i = 0; i < stateSize; i++)
   {
     state[i] = state[i]*observationProbability(observation,i);
   }
