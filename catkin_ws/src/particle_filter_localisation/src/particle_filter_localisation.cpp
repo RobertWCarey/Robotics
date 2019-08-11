@@ -383,6 +383,9 @@ void ParticleFilter::resampleParticles()
         // Add the particle to the "particles_" vector
         particles_.push_back(*old_particles_it);
 
+        //Normalise weight of the particle being added
+        particles_.back().weight = 1./(double)num_particles_;
+
         // Add jitter to the particle
         particles_.back().x += randomNormal(0.02);
         particles_.back().y += randomNormal(0.02);
