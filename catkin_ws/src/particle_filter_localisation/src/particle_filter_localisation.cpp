@@ -322,6 +322,7 @@ void ParticleFilter::estimatePose()
   // Variables to store numerators for weighted average calc
   double x_weighted_sum, y_weighted_sum;
   double theta_x_weighted_sum, theta_y_weighted_sum;
+  double theta_x_weighted, theta_y_weighted;
 
   // Variable to store sum of weights
   double sumWeights;
@@ -334,15 +335,15 @@ void ParticleFilter::estimatePose()
     y_weighted_sum += particle.weight*particle.y;
 
     // Convert to cartesian coordinates, can assume hypotenuse is 1 as cancels when arctan2()
-    theta_x_weighted_sum += particle.weight*std::sin(particle.theta);
-    theta_y_weighted_sum += particle.weight*std::cos(particle.theta);
+    theta_y_weighted_sum += particle.weight*std::sin(particle.theta);
+    theta_x_weighted_sum += particle.weight*std::cos(particle.theta);
   }
 
   // Load weighted averages into the pose variables
   estimated_pose_x = x_weighted_sum/sumWeights;
   estimated_pose_y = y_weighted_sum/sumWeights;
   // Convert cartisian back to angle before loading
-  estimated_pose_theta = std::atan2(theta_x_weighted_sum/sumWeights,theta_y_weighted_sum/sumWeights);
+  estimated_pose_theta = std::atan2(theta_y_weighted_sum/sumWeights,theta_x_weighted_sum/sumWeights);
 
 
   // Set the estimated pose message
@@ -610,7 +611,7 @@ void ParticleFilter::scanCallback(const sensor_msgs::LaserScan& scan_msg)
       double denomenator = 2 * std::pow(sensing_noise_stddev_, 2);
       double secondTerm = std::exp(-1 * (numerator/denomenator) );
 
-      likelihood = firstTerm * secondTerm;
+      likelihood *= firstTerm * secondTerm;
 
 
     }
