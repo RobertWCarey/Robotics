@@ -345,6 +345,7 @@ void ParticleFilter::estimatePose()
   // Convert cartisian back to angle before loading
   estimated_pose_theta = std::atan2(theta_y_weighted_sum/sumWeights,theta_x_weighted_sum/sumWeights);
 
+  estimated_pose_theta = wrapAngle(estimated_pose_theta);
 
   // Set the estimated pose message
   estimated_pose_.position.x = estimated_pose_x;
