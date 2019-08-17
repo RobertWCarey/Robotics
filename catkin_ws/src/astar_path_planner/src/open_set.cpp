@@ -71,6 +71,28 @@ void OpenSet::update(const Node& n)
 
   // YOUR CODE HERE
 
+  for(Node& x: nodes_)
+  {
+    if (x.id == n.id)
+    {
+      if (n.cost < x.cost)
+        x = n;
+    }
+  }
+
+  // int temp = n.id;
+  // int index = std::find_if(nodes_.begin(),nodes_.end(), [](Node i){
+  //   if (i.id == temp)
+  //     return true;
+  //   return false;
+  // });
+
+  // if (index != nodes_.end())
+  // {
+  //   if (n.cost < nodes_[index].cost)
+  //     nodes_[index] = n;
+  // }
+
 }
 
 bool OpenSet::empty()
