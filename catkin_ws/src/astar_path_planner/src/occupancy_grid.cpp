@@ -146,21 +146,29 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
   WorldPosition curr_worldPos = getWorldPosition(id);
   double curr_x = curr_worldPos.x;
   double curr_y = curr_worldPos.y;
+  AdjacentCell curr_adjCell;
 
   std::vector<double> x_pos{curr_x, curr_x + map_.info.resolution, curr_x - map_.info.resolution};
   std::vector<double> y_pos{curr_y, curr_y + map_.info.resolution, curr_y - map_.info.resolution};
 
-  if (diagonal_movement)
+  
+  for(double x : x_pos)
   {
-    for(double x : x_pos)
+    for(double y : y_pos)
     {
-      for(double y : y_pos)
+      curr_adjCell.world_position = {
+        .x = x,
+        .y = y
+      };
+      curr_adjCell.id = getCellId(getGridPosition(curr_adjCell.world_position));
+      curr_adjCell.cost = std::sqrt(pow(curr_x-x,2)+pow(curr_y-y,2));
+
+      if (curr_adjCell.id != id)
       {
-        WorldPosition adj_worldPos = {
-          .x = x,
-          .y = y
-        }
-        getCellId(getGridPosition(adj_worldPos));
+        if (diagonal_movement)
+          adjacent_cells.push_back(curr_adjCell);
+        else if (x == curr_x || y == curr_y)
+          adjacent_cells.push_back(curr_adjCell);
       }
     }
   }
