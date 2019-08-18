@@ -21,7 +21,7 @@ double heuristicCost(astar_path_planner::WorldPosition a, astar_path_planner::Wo
 {
   // Return a heuristic cost between two world positions
 
-  return 0.;  // YOUR CODE HERE
+  return std::sqrt(pow(b.x-a.x,2)+pow(b.y-a.y,2));  // YOUR CODE HERE
 }
 
 void waitForKey()
@@ -218,6 +218,62 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
     //     If the adjacent cell is not on the closed or open sets, add it to the open set
 
     // YOUR CODE HERE
+
+    while (!goal_found)
+    {
+      ROS_INFO_STREAM(open_set);
+      waitForKey();
+      Node curr_node = open_set.pop(req.heuristic_cost_weight);
+      closed_set.push(curr_node);
+      if (curr_node.id == goal_cell.id)
+        goal_found = true;
+      std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(curr_node.id, req.diagonal_movement);
+      for (AdjacentCell a : adjacent_cells)
+      {
+        if (!closed_set.contains(a.id))
+        {
+          //Create node
+          Node curr_adjnode = {
+            .id = a.id,
+            .parent_id = curr_node.id,
+            .cost = curr_node.cost + a.cost, //distance from start node
+            .heuristic_cost = heuristicCost(a.world_position, goal_position_)
+          };
+
+          if (open_set.contains(curr_adjnode.id))
+          {
+            open_set.update(curr_adjnode);
+          }
+          else
+          {
+            open_set.push(curr_adjnode);
+          }
+        }
+      }
+      ROS_INFO_STREAM(open_set);
+      
+      waitForKey();
+    }
+    waitForKey();
+    Node test = open_set.pop(req.heuristic_cost_weight);
+
+    std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(test.id, req.diagonal_movement);
+    // adjacent_cells = occupancy_grid_.getAdjacentCells(test.id, req.diagonal_movement);
+    // AdjacentCell test1 = adjacent_cells[1];
+    ROS_INFO_STREAM("\n\nPopped: \n" << test);
+    
+    int count = 0;
+    for (AdjacentCell a : adjacent_cells)
+    {
+      ROS_INFO_STREAM("\n\nAdjacent Cell id: " << a.id);
+      ROS_INFO_STREAM("\nAdjacent Cell cost: \n" << a.cost);
+      ROS_INFO_STREAM("\nAdjacent Cell World Pos x: \n" << a.world_position.x);
+      ROS_INFO_STREAM("\nAdjacent Cell World Pos y: \n" << a.world_position.y);
+      waitForKey();
+    }
+    // ROS_INFO_STREAM("\n\nAdjacent 1: \n" << adjacent_cells[1].id);
+    // ROS_INFO_STREAM("\n\nAdjacent 2: \n" << adjacent_cells[1]);
+    waitForKey();
 
     // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
 
