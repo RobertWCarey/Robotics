@@ -221,12 +221,13 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
 
     while (!goal_found)
     {
-      ROS_INFO_STREAM(open_set);
-      waitForKey();
       Node curr_node = open_set.pop(req.heuristic_cost_weight);
       closed_set.push(curr_node);
       if (curr_node.id == goal_cell.id)
+      {
         goal_found = true;
+        break;
+      }
       std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(curr_node.id, req.diagonal_movement);
       for (AdjacentCell a : adjacent_cells)
       {
@@ -239,7 +240,9 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
             .cost = curr_node.cost + a.cost, //distance from start node
             .heuristic_cost = heuristicCost(a.world_position, goal_position_)
           };
-
+          // ROS_INFO("curr_node ID: %d", curr_node.id);
+          // ROS_INFO("Parent ID: %d", curr_adjnode.parent_id);
+          // waitForKey();
           if (open_set.contains(curr_adjnode.id))
           {
             open_set.update(curr_adjnode);
@@ -250,30 +253,13 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
           }
         }
       }
-      ROS_INFO_STREAM(open_set);
+      // ROS_INFO_STREAM(closed_set);
+      
+      // waitForKey();
+    }
+    ROS_INFO_STREAM(closed_set);
       
       waitForKey();
-    }
-    waitForKey();
-    Node test = open_set.pop(req.heuristic_cost_weight);
-
-    std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(test.id, req.diagonal_movement);
-    // adjacent_cells = occupancy_grid_.getAdjacentCells(test.id, req.diagonal_movement);
-    // AdjacentCell test1 = adjacent_cells[1];
-    ROS_INFO_STREAM("\n\nPopped: \n" << test);
-    
-    int count = 0;
-    for (AdjacentCell a : adjacent_cells)
-    {
-      ROS_INFO_STREAM("\n\nAdjacent Cell id: " << a.id);
-      ROS_INFO_STREAM("\nAdjacent Cell cost: \n" << a.cost);
-      ROS_INFO_STREAM("\nAdjacent Cell World Pos x: \n" << a.world_position.x);
-      ROS_INFO_STREAM("\nAdjacent Cell World Pos y: \n" << a.world_position.y);
-      waitForKey();
-    }
-    // ROS_INFO_STREAM("\n\nAdjacent 1: \n" << adjacent_cells[1].id);
-    // ROS_INFO_STREAM("\n\nAdjacent 2: \n" << adjacent_cells[1]);
-    waitForKey();
 
     // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
 
@@ -288,6 +274,8 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
     {
       (plan_path_main_loop_duration_ - loop_duration).sleep();
     }
+    waitForKey();
+    break;
   }
 
   if (!goal_found)
@@ -296,8 +284,13 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
     return false;
   }
 
+  ROS_INFO_STREAM("Get Path");
+  
   // Get the path from the closed set
   std::vector<int> path_ids = closed_set.getPath(start_cell.id, goal_cell.id);
+  
+  ROS_INFO_STREAM(path_ids[0]);
+  waitForKey();
 
   // Convert node IDs to world positions
   std::vector<WorldPosition> path_world_positions{};

@@ -11,6 +11,7 @@ class ClosedSet
 {
 private:
   std::vector<Node> nodes_{};
+  Node getNode(int id);
 
 public:
   size_t size();

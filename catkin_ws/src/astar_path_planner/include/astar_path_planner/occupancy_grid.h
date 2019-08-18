@@ -48,7 +48,7 @@ public:
   OccupancyGrid(const nav_msgs::OccupancyGrid& map, double inflation_radius);
 
   // Public methods
-  bool isOutOfBounds(WorldPosition world_position);
+  bool isOutOfBounds(WorldPosition world_position);// true if is out of bounds
   bool isOccupied(WorldPosition world_position);
   WorldPosition getWorldPosition(int id);  // World position of the centre of the cell
   Cell getCell(WorldPosition world_position);
@@ -66,7 +66,7 @@ private:
   double map_x_min_ = 0., map_x_max_ = 0., map_y_min_ = 0., map_y_max_ = 0.;
 
   // Private methods
-  bool isOutOfBounds(GridPosition grid_position);
+  bool isOutOfBounds(GridPosition grid_position);// true if is out of bounds
   bool isOccupied(int id);
   bool isOccupied(GridPosition grid_position);
   GridPosition getGridPosition(WorldPosition world_position);

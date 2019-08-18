@@ -160,15 +160,19 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
         .x = x,
         .y = y
       };
-      curr_adjCell.id = getCellId(getGridPosition(curr_adjCell.world_position));
-      curr_adjCell.cost = std::sqrt(pow(curr_x-x,2)+pow(curr_y-y,2));
 
-      if (curr_adjCell.id != id)
+      if (!isOutOfBounds(curr_adjCell.world_position) && !isOccupied(curr_adjCell.world_position))
       {
-        if (diagonal_movement)
-          adjacent_cells.push_back(curr_adjCell);
-        else if (x == curr_x || y == curr_y)
-          adjacent_cells.push_back(curr_adjCell);
+        curr_adjCell.id = getCellId(getGridPosition(curr_adjCell.world_position));
+        curr_adjCell.cost = std::sqrt(pow(curr_x-x,2)+pow(curr_y-y,2));
+
+        if (curr_adjCell.id != id)
+        {
+          if (diagonal_movement)
+            adjacent_cells.push_back(curr_adjCell);
+          else if (x == curr_x || y == curr_y)
+            adjacent_cells.push_back(curr_adjCell);
+        }
       }
     }
   }
