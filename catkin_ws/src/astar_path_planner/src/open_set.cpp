@@ -25,7 +25,7 @@ Node OpenSet::pop(double heuristic_cost_weight)
 
   for(Node n: nodes_)
   {
-    int cost = n.cost + heuristic_cost_weight; 
+    int cost = n.cost + (n.heuristic_cost*heuristic_cost_weight); 
     if( cost < minCost)
     {
       index = counter;

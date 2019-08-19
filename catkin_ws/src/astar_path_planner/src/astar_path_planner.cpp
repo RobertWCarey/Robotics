@@ -219,8 +219,8 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
 
     // YOUR CODE HERE
 
-    while (!goal_found)
-    {
+    // while (!goal_found)
+    // {
       Node curr_node = open_set.pop(req.heuristic_cost_weight);
       closed_set.push(curr_node);
       if (curr_node.id == goal_cell.id)
@@ -256,10 +256,10 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
       // ROS_INFO_STREAM(closed_set);
       
       // waitForKey();
-    }
-    ROS_INFO_STREAM(closed_set);
+    // }
+    // ROS_INFO_STREAM(closed_set);
       
-      waitForKey();
+    //   waitForKey();
 
     // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
 
@@ -274,8 +274,6 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
     {
       (plan_path_main_loop_duration_ - loop_duration).sleep();
     }
-    waitForKey();
-    break;
   }
 
   if (!goal_found)
@@ -288,9 +286,7 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
   
   // Get the path from the closed set
   std::vector<int> path_ids = closed_set.getPath(start_cell.id, goal_cell.id);
-  
-  ROS_INFO_STREAM(path_ids[0]);
-  waitForKey();
+
 
   // Convert node IDs to world positions
   std::vector<WorldPosition> path_world_positions{};

@@ -75,8 +75,6 @@ std::vector<int> ClosedSet::getPath(int start_id, int goal_id)
     if (curr_node.id == start_id)
     {
       startNodeFound = true;
-      ROS_INFO("Paused, press enter to continue...");
-      std::cin.get();
     }
     curr_node = getNode(curr_node.parent_id);
   }
