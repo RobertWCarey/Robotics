@@ -21,11 +21,11 @@ Node OpenSet::pop(double heuristic_cost_weight)
   // YOUR CODE HERE
 
   int counter = 0;
-  int minCost = std::numeric_limits<double>::max();
+  double minCost = std::numeric_limits<double>::max();
 
   for(Node n: nodes_)
   {
-    int cost = n.cost + (n.heuristic_cost*heuristic_cost_weight); 
+    double cost = n.cost + (n.heuristic_cost*heuristic_cost_weight); 
     if( cost < minCost)
     {
       index = counter;

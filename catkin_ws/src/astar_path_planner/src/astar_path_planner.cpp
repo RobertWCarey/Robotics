@@ -257,9 +257,9 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
       
       // waitForKey();
     // }
-    // ROS_INFO_STREAM(closed_set);
+      // ROS_INFO_STREAM(open_set);
       
-    //   waitForKey();
+      // waitForKey();
 
     // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
 
