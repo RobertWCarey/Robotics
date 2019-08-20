@@ -72,6 +72,9 @@ std::vector<int> ClosedSet::getPath(int start_id, int goal_id)
     curr_node = getNode(curr_node.parent_id);
   }
 
+  // Reverse path
+  std::reverse(path.begin(), path.end());
+
   return path;
 }
 
