@@ -40,7 +40,7 @@ public:
   explicit PathPlanner(ros::NodeHandle &nh);
 
 private:
-  double inflation_radius_ = 0.1;
+  double inflation_radius_ = 0.005;
   double plan_path_main_loop_rate_ = 500; // The target rate of the main loop in planPath()
   ros::Duration plan_path_main_loop_duration_ = ros::Duration(1. / plan_path_main_loop_rate_);
 
