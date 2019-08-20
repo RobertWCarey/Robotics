@@ -1,0 +1,11 @@
+Describe what happens when the heuristic cost weight is above 1.0.
+Try various start and goal positions, and various weight values.
+
+ANSWER HERE:
+By increasing the heuristic cost weight above 1.0 the number of nodes in the closed set is reduced.
+However in most cases, particularly when there is an obstical in between the start and goal, this results in a longer resultant path length.
+
+This means that we can increase the heuristic cost weight to reduce the time taken to find a path. 
+However, this is more likely to result in a path that is longer than the optimal path.
+
+
