@@ -117,8 +117,6 @@ astar_path_planner/PlanPath.h
 /home/rob/Documents/Robotics/catkin_ws/src/astar_path_planner/src/closed_set.cpp
 astar_path_planner/closed_set.h
 /home/rob/Documents/Robotics/catkin_ws/src/astar_path_planner/src/astar_path_planner/closed_set.h
-ros/ros.h
--
 algorithm
 -
 
