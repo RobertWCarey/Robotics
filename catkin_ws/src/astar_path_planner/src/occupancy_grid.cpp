@@ -143,28 +143,33 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
 
   // YOUR CODE HERE
 
-  AdjacentCell curr_adjCell;
+  AdjacentCell curr_adjCell; // Local struct to store the current adjacent cell
 
-  std::vector<int> x_pos{grid_position.x, grid_position.x + 1, grid_position.x - 1};
-  std::vector<int> y_pos{grid_position.y, grid_position.y + 1, grid_position.y - 1};
-
-  for (int x : x_pos)
+  // Loop through x positions for adjacent cells
+  for (int x = grid_position.x - 1; x <= grid_position.x + 1; x++)
   {
-    for (int y : y_pos)
+    // Loop through y positions for adjacent cells
+    for (int y = grid_position.y - 1; y <= grid_position.y + 1; y++)
     {
+      // Store current grid position for each iteration
       GridPosition curr_gridPos = {.x = x, .y = y};
 
-      curr_adjCell.world_position = getWorldPosition(curr_gridPos);
-
+      // Check that the current grid position is in the map and hasn't been visited 
       if (!isOutOfBounds(curr_gridPos) && !isOccupied(curr_gridPos))
       {
+        // Load information for current adjacent cell
+        curr_adjCell.world_position = getWorldPosition(curr_gridPos);
         curr_adjCell.id = getCellId(curr_gridPos);
         curr_adjCell.cost = std::sqrt(pow((grid_position.x - x)*map_.info.resolution, 2) + pow((grid_position.y - y)*map_.info.resolution, 2));
 
+        // Do nothing if it is the origional cell.
+        // i.e. it not an ajacent cell
         if (curr_adjCell.id != id)
         {
+          // if diagonal_movement add all adjacent cells
           if (diagonal_movement)
             adjacent_cells.push_back(curr_adjCell);
+          // Else only add cells that are Manhattan movement
           else if (x == grid_position.x || y == grid_position.y)
             adjacent_cells.push_back(curr_adjCell);
         }
