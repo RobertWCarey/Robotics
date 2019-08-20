@@ -2,7 +2,7 @@
 
 namespace astar_path_planner
 {
-OccupancyGrid::OccupancyGrid(const nav_msgs::OccupancyGrid& map, const double inflation_radius)
+OccupancyGrid::OccupancyGrid(const nav_msgs::OccupancyGrid &map, const double inflation_radius)
 {
   // Copy the occupancy grid message
   map_ = map;
@@ -12,9 +12,9 @@ OccupancyGrid::OccupancyGrid(const nav_msgs::OccupancyGrid& map, const double in
 
   // Dilate the image
   int element_diameter =
-      2 * static_cast<int>(std::round(inflation_radius / map.info.resolution)) + 1;  // element_diameter is always odd
+      2 * static_cast<int>(std::round(inflation_radius / map.info.resolution)) + 1; // element_diameter is always odd
 
-  int offset = (element_diameter - 1) / 2;  // Centre of the element
+  int offset = (element_diameter - 1) / 2; // Centre of the element
 
   cv::Mat element =
       cv::getStructuringElement(cv::MORPH_RECT, cv::Size(element_diameter, element_diameter), cv::Size(offset, offset));
@@ -31,13 +31,13 @@ OccupancyGrid::OccupancyGrid(const nav_msgs::OccupancyGrid& map, const double in
 
 bool OccupancyGrid::isOutOfBounds(GridPosition grid_position)
 {
-  return grid_position.x < 0 || grid_position.x > map_image_.cols ||  //
+  return grid_position.x < 0 || grid_position.x > map_image_.cols || //
          grid_position.y < 0 || grid_position.y > map_image_.rows;
 }
 
 bool OccupancyGrid::isOutOfBounds(WorldPosition world_position)
 {
-  return world_position.x < map_x_min_ || world_position.x > map_x_max_ ||  //
+  return world_position.x < map_x_min_ || world_position.x > map_x_max_ || //
          world_position.y < map_y_min_ || world_position.y > map_y_max_;
 }
 
@@ -58,7 +58,7 @@ bool OccupancyGrid::isOccupied(WorldPosition world_position)
 
 GridPosition OccupancyGrid::getGridPosition(int id)
 {
-  return { id % static_cast<int>(map_.info.width), id / static_cast<int>(map_.info.width) };
+  return {id % static_cast<int>(map_.info.width), id / static_cast<int>(map_.info.width)};
 }
 
 GridPosition OccupancyGrid::getGridPosition(WorldPosition world_position)
@@ -151,20 +151,18 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
   std::vector<double> x_pos{curr_x, curr_x + map_.info.resolution, curr_x - map_.info.resolution};
   std::vector<double> y_pos{curr_y, curr_y + map_.info.resolution, curr_y - map_.info.resolution};
 
-  
-  for(double x : x_pos)
+  for (double x : x_pos)
   {
-    for(double y : y_pos)
+    for (double y : y_pos)
     {
       curr_adjCell.world_position = {
-        .x = x,
-        .y = y
-      };
+          .x = x,
+          .y = y};
 
       if (!isOutOfBounds(curr_adjCell.world_position) && !isOccupied(curr_adjCell.world_position))
       {
         curr_adjCell.id = getCellId(getGridPosition(curr_adjCell.world_position));
-        curr_adjCell.cost = std::sqrt(pow(curr_x-x,2)+pow(curr_y-y,2));
+        curr_adjCell.cost = std::sqrt(pow(curr_x - x, 2) + pow(curr_y - y, 2));
 
         if (curr_adjCell.id != id)
         {
@@ -180,4 +178,4 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
   return adjacent_cells;
 }
 
-}  // namespace astar_path_planner
+} // namespace astar_path_planner

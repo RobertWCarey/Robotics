@@ -1,5 +1,4 @@
 #include "astar_path_planner/closed_set.h"
-#include <ros/ros.h>
 
 #include <algorithm>
 
@@ -10,15 +9,19 @@ size_t ClosedSet::size()
   return nodes_.size();
 }
 
-Node ClosedSet::getNode(int id){
-  for(const Node& n : nodes_)
+Node ClosedSet::getNode(int id)
+{
+  for (const Node &n : nodes_)
   {
     if (n.id == id)
       return n;
   }
+
+  // if no match node can be found return last node
+  return nodes_.back();
 }
 
-void ClosedSet::push(const Node& n)
+void ClosedSet::push(const Node &n)
 {
   nodes_.push_back(n);
 }
@@ -26,7 +29,7 @@ void ClosedSet::push(const Node& n)
 bool ClosedSet::contains(int id)
 {
   // Return true if the node is in nodes_
-  for (const auto& n : nodes_)
+  for (const auto &n : nodes_)
   {
     if (n.id == id)
     {
@@ -35,12 +38,6 @@ bool ClosedSet::contains(int id)
   }
 
   return false;
-}
-
-void waitForKey()
-{
-  ROS_INFO("Paused, press enter to continue...");
-  std::cin.get();
 }
 
 std::vector<int> ClosedSet::getPath(int start_id, int goal_id)
@@ -53,47 +50,41 @@ std::vector<int> ClosedSet::getPath(int start_id, int goal_id)
   std::vector<int> path{};
 
   // YOUR CODE HERE
-  bool startNodeFound = false;
+
+  bool startNodeFound = false; // bool to indicat if start node has been found
+
+  // Get the last node off the end of the closed set
+  // This should be the goal node
   Node curr_node = nodes_.back();
 
-  // ROS_INFO_STREAM("\n\nCurrent Node: " << curr_node);
-  // ROS_INFO("\n\nGoal ID: %d", goal_id);
-  // ROS_INFO("\n\nStart ID: %d", start_id);
-  // waitForKey();
-  // for(Node n : nodes_)
-  // {
-  //   ROS_INFO_STREAM("\n\nnodes_: " << n);
-  // }
-  // waitForKey();
   while (!startNodeFound)
   {
+    // Update the path list
     path.push_back(curr_node.id);
-    // waitForKey();
-    // ROS_INFO("\n\nNext Node ID: %d", curr_node.id);
-    // ROS_INFO("\n\nParent Node ID: %d", curr_node.parent_id);
-    
+
+    // If the node just added to the path is the start ndoe, exit
     if (curr_node.id == start_id)
     {
       startNodeFound = true;
     }
+
+    // Update curr_node with the parent node of the previous curr_node
     curr_node = getNode(curr_node.parent_id);
   }
-  
-  // std::reverse(path.begin(), path.end());
 
   return path;
 }
 
-const std::vector<Node>& ClosedSet::getNodes()
+const std::vector<Node> &ClosedSet::getNodes()
 {
   return nodes_;
 }
 
-std::ostream& operator<<(std::ostream& os, const ClosedSet& closed_set)
+std::ostream &operator<<(std::ostream &os, const ClosedSet &closed_set)
 {
   os << "\n\nClosed set:" << std::endl;
 
-  for (const auto& n : closed_set.nodes_)
+  for (const auto &n : closed_set.nodes_)
   {
     os << n;
   }
@@ -101,4 +92,4 @@ std::ostream& operator<<(std::ostream& os, const ClosedSet& closed_set)
   return os;
 }
 
-}  // namespace astar_path_planner
+} // namespace astar_path_planner

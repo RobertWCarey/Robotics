@@ -4,7 +4,7 @@
 
 namespace astar_path_planner
 {
-void OpenSet::push(const Node& n)
+void OpenSet::push(const Node &n)
 {
   nodes_.push_back(n);
 }
@@ -20,19 +20,20 @@ Node OpenSet::pop(double heuristic_cost_weight)
 
   // YOUR CODE HERE
 
-  int counter = 0;
-  double minCost = std::numeric_limits<double>::max();
+  int counter = 0;                                     // Used to store current index in foreach loop
+  double minCost = std::numeric_limits<double>::max(); // Store current min cost
 
-  for(Node n: nodes_)
+  for (Node node : nodes_)
   {
-    double cost = n.cost + (n.heuristic_cost*heuristic_cost_weight); 
-    if( cost < minCost)
+    double cost = node.cost + (node.heuristic_cost * heuristic_cost_weight);
+    if (cost < minCost)
     {
+      // Update index with current position in foreach loop
       index = counter;
       minCost = cost;
     }
 
-    counter++; 
+    counter++;
   }
 
   // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
@@ -53,7 +54,7 @@ Node OpenSet::pop(double heuristic_cost_weight)
 bool OpenSet::contains(int id)
 {
   // Returns true if the node is in nodes_
-  for (const auto& n : nodes_)
+  for (const auto &n : nodes_)
   {
     if (n.id == id)
     {
@@ -64,35 +65,24 @@ bool OpenSet::contains(int id)
   return false;
 }
 
-void OpenSet::update(const Node& n)
+void OpenSet::update(const Node &n)
 {
   // Find node "n" in "nodes_"
   // If the cost of node "n" is less than the cost of the node already in the open set, replace it
 
   // YOUR CODE HERE
 
-  for(Node& x: nodes_)
+  // Loop through nodes
+  for (Node &node : nodes_)
   {
-    if (x.id == n.id)
+    // Find matching node
+    if (node.id == n.id)
     {
-      if (n.cost < x.cost)
-        x = n;
+      // if the new node has lower cost replace exsiting node
+      if (n.cost < node.cost)
+        node = n;
     }
   }
-
-  // int temp = n.id;
-  // int index = std::find_if(nodes_.begin(),nodes_.end(), [](Node i){
-  //   if (i.id == temp)
-  //     return true;
-  //   return false;
-  // });
-
-  // if (index != nodes_.end())
-  // {
-  //   if (n.cost < nodes_[index].cost)
-  //     nodes_[index] = n;
-  // }
-
 }
 
 bool OpenSet::empty()
@@ -100,16 +90,16 @@ bool OpenSet::empty()
   return nodes_.empty();
 }
 
-const std::vector<Node>& OpenSet::getNodes()
+const std::vector<Node> &OpenSet::getNodes()
 {
   return nodes_;
 }
 
-std::ostream& operator<<(std::ostream& os, const OpenSet& open_set)
+std::ostream &operator<<(std::ostream &os, const OpenSet &open_set)
 {
   os << "\n\nOpen set:" << std::endl;
 
-  for (const auto& n : open_set.nodes_)
+  for (const auto &n : open_set.nodes_)
   {
     os << n;
   }
@@ -117,4 +107,4 @@ std::ostream& operator<<(std::ostream& os, const OpenSet& open_set)
   return os;
 }
 
-}  // namespace astar_path_planner
+} // namespace astar_path_planner

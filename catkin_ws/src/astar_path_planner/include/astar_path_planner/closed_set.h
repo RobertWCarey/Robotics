@@ -11,17 +11,17 @@ class ClosedSet
 {
 private:
   std::vector<Node> nodes_{};
-  Node getNode(int id);
+  Node getNode(int id); // returns the node with a matching id in nodes_
 
 public:
   size_t size();
-  void push(const Node& n);                             // Add a new node
-  bool contains(int id);                                // Returns true if the node is in the closed set
-  std::vector<int> getPath(int start_id, int goal_id);  // Return a path of IDs from the goal to the start
+  void push(const Node &n);                            // Add a new node
+  bool contains(int id);                               // Returns true if the node is in the closed set
+  std::vector<int> getPath(int start_id, int goal_id); // Return a path of IDs from the goal to the start
 
-  const std::vector<Node>& getNodes();
+  const std::vector<Node> &getNodes();
 
-  friend std::ostream& operator<<(std::ostream& os, const ClosedSet& closed_set);
+  friend std::ostream &operator<<(std::ostream &os, const ClosedSet &closed_set);
 };
-}  // namespace astar_path_planner
-#endif  // ASTAR_PATH_PLANNER_CLOSED_SET_H
+} // namespace astar_path_planner
+#endif // ASTAR_PATH_PLANNER_CLOSED_SET_H

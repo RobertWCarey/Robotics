@@ -15,13 +15,14 @@
 
 #include "astar_path_planner/PlanPath.h"
 
+// unnamed namespace, similar to static in c
 namespace
 {
 double heuristicCost(astar_path_planner::WorldPosition a, astar_path_planner::WorldPosition b)
 {
   // Return a heuristic cost between two world positions
-
-  return std::sqrt(pow(b.x-a.x,2)+pow(b.y-a.y,2));  // YOUR CODE HERE
+  // Use Pythagorean theorem to calculate euclidian distance between 'a' & 'b'
+  return std::sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2)); // YOUR CODE HERE
 }
 
 void waitForKey()
@@ -29,17 +30,18 @@ void waitForKey()
   ROS_INFO("Paused, press enter to continue...");
   std::cin.get();
 }
-}  // namespace
+} // namespace
+
 namespace astar_path_planner
 {
 class PathPlanner
 {
 public:
-  explicit PathPlanner(ros::NodeHandle& nh);
+  explicit PathPlanner(ros::NodeHandle &nh);
 
 private:
   double inflation_radius_ = 0.1;
-  double plan_path_main_loop_rate_ = 500;  // The target rate of the main loop in planPath()
+  double plan_path_main_loop_rate_ = 500; // The target rate of the main loop in planPath()
   ros::Duration plan_path_main_loop_duration_ = ros::Duration(1. / plan_path_main_loop_rate_);
 
   OccupancyGrid occupancy_grid_;
@@ -54,13 +56,13 @@ private:
 
   ros::ServiceServer plan_path_srv_{};
 
-  void initialPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& pose_msg);
-  void goalCallback(const geometry_msgs::PoseStamped& pose_msg);
-  visualization_msgs::Marker createSetMarker(const std::vector<Node>& nodes, MarkerColour colour);
-  bool planPath(astar_path_planner::PlanPath::Request& req, astar_path_planner::PlanPath::Response& res);
+  void initialPoseCallback(const geometry_msgs::PoseWithCovarianceStamped &pose_msg);
+  void goalCallback(const geometry_msgs::PoseStamped &pose_msg);
+  visualization_msgs::Marker createSetMarker(const std::vector<Node> &nodes, MarkerColour colour);
+  bool planPath(astar_path_planner::PlanPath::Request &req, astar_path_planner::PlanPath::Response &res);
 };
 
-PathPlanner::PathPlanner(ros::NodeHandle& nh)
+PathPlanner::PathPlanner(ros::NodeHandle &nh)
 {
   // Get parameters (a variable will not be changed if the ROS parameter has not been set)
   ros::param::get("~inflation_radius", inflation_radius_);
@@ -107,17 +109,17 @@ PathPlanner::PathPlanner(ros::NodeHandle& nh)
   plan_path_srv_ = nh.advertiseService("plan_path", &PathPlanner::planPath, this);
 }
 
-void PathPlanner::initialPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& pose_msg)
+void PathPlanner::initialPoseCallback(const geometry_msgs::PoseWithCovarianceStamped &pose_msg)
 {
   // Check if the position is out of the map
-  if (occupancy_grid_.isOutOfBounds(WorldPosition{ pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y }))
+  if (occupancy_grid_.isOutOfBounds(WorldPosition{pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y}))
   {
     ROS_INFO("Start position is out of bounds");
     return;
   }
 
   // Check if the position is occupied
-  if (occupancy_grid_.isOccupied(WorldPosition{ pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y }))
+  if (occupancy_grid_.isOccupied(WorldPosition{pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y}))
   {
     ROS_INFO("Start position occupied");
     return;
@@ -134,17 +136,17 @@ void PathPlanner::initialPoseCallback(const geometry_msgs::PoseWithCovarianceSta
   start_pub_.publish(createSphereMarker(start_position_.x, start_position_.y, MarkerColour::GREEN, 0.1));
 }
 
-void PathPlanner::goalCallback(const geometry_msgs::PoseStamped& pose_msg)
+void PathPlanner::goalCallback(const geometry_msgs::PoseStamped &pose_msg)
 {
   // Check if the position is out of the map
-  if (occupancy_grid_.isOutOfBounds(WorldPosition{ pose_msg.pose.position.x, pose_msg.pose.position.y }))
+  if (occupancy_grid_.isOutOfBounds(WorldPosition{pose_msg.pose.position.x, pose_msg.pose.position.y}))
   {
     ROS_INFO("Goal position is out of bounds");
     return;
   }
 
   // Check if the position is occupied
-  if (occupancy_grid_.isOccupied(WorldPosition{ pose_msg.pose.position.x, pose_msg.pose.position.y }))
+  if (occupancy_grid_.isOccupied(WorldPosition{pose_msg.pose.position.x, pose_msg.pose.position.y}))
   {
     ROS_INFO("Goal position occupied");
     return;
@@ -161,13 +163,13 @@ void PathPlanner::goalCallback(const geometry_msgs::PoseStamped& pose_msg)
   goal_pub_.publish(createSphereMarker(goal_position_.x, goal_position_.y, MarkerColour::RED, 0.1));
 }
 
-visualization_msgs::Marker PathPlanner::createSetMarker(const std::vector<Node>& nodes, MarkerColour colour)
+visualization_msgs::Marker PathPlanner::createSetMarker(const std::vector<Node> &nodes, MarkerColour colour)
 {
   std::vector<WorldPosition> world_positions{};
 
   world_positions.reserve(nodes.size());
 
-  for (const auto& n : nodes)
+  for (const auto &n : nodes)
   {
     world_positions.emplace_back(occupancy_grid_.getWorldPosition(n.id));
   }
@@ -175,7 +177,7 @@ visualization_msgs::Marker PathPlanner::createSetMarker(const std::vector<Node>&
   return createSphereListMarker(world_positions, colour, 0.05);
 }
 
-bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_path_planner::PlanPath::Response& res)
+bool PathPlanner::planPath(astar_path_planner::PlanPath::Request &req, astar_path_planner::PlanPath::Response &res)
 {
   // Only try to plan a path if the start and goal are valid
   if (!start_position_valid_ || !goal_position_valid_)
@@ -219,47 +221,46 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
 
     // YOUR CODE HERE
 
-    // while (!goal_found)
-    // {
-      Node curr_node = open_set.pop(req.heuristic_cost_weight);
-      closed_set.push(curr_node);
-      if (curr_node.id == goal_cell.id)
+    // Get node with the lowest cost off the open set
+    Node curr_node = open_set.pop(req.heuristic_cost_weight);
+
+    // Add to closed set
+    closed_set.push(curr_node);
+
+    if (curr_node.id == goal_cell.id)
+    {
+      // If goal node finish search
+      goal_found = true;
+      break;
+    }
+
+    // Get all nodes adjacent to curr_node
+    std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(curr_node.id, req.diagonal_movement);
+
+    for (AdjacentCell a : adjacent_cells)
+    {
+      // If already on the closed set do nothing
+      if (!closed_set.contains(a.id))
       {
-        goal_found = true;
-        break;
-      }
-      std::vector<AdjacentCell> adjacent_cells = occupancy_grid_.getAdjacentCells(curr_node.id, req.diagonal_movement);
-      for (AdjacentCell a : adjacent_cells)
-      {
-        if (!closed_set.contains(a.id))
-        {
-          //Create node
-          Node curr_adjnode = {
+        //Create node
+        Node curr_adjnode = {
             .id = a.id,
             .parent_id = curr_node.id,
             .cost = curr_node.cost + a.cost, //distance from start node
-            .heuristic_cost = heuristicCost(a.world_position, goal_position_)
-          };
-          // ROS_INFO("curr_node ID: %d", curr_node.id);
-          // ROS_INFO("Parent ID: %d", curr_adjnode.parent_id);
-          // waitForKey();
-          if (open_set.contains(curr_adjnode.id))
-          {
-            open_set.update(curr_adjnode);
-          }
-          else
-          {
-            open_set.push(curr_adjnode);
-          }
+            .heuristic_cost = heuristicCost(a.world_position, goal_position_)};
+        // If already on the open set
+        if (open_set.contains(curr_adjnode.id))
+        {
+          // update if curr_adjnode is better than one already on open set
+          open_set.update(curr_adjnode);
+        }
+        else
+        {
+          // Otherwise just put on open set
+          open_set.push(curr_adjnode);
         }
       }
-      // ROS_INFO_STREAM(closed_set);
-      
-      // waitForKey();
-    // }
-      // ROS_INFO_STREAM(open_set);
-      
-      // waitForKey();
+    }
 
     // YOU DON'T NEED TO MODIFY ANYTHING AFTER THIS LINE
 
@@ -283,10 +284,9 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
   }
 
   ROS_INFO_STREAM("Get Path");
-  
+
   // Get the path from the closed set
   std::vector<int> path_ids = closed_set.getPath(start_cell.id, goal_cell.id);
-
 
   // Convert node IDs to world positions
   std::vector<WorldPosition> path_world_positions{};
@@ -311,9 +311,9 @@ bool PathPlanner::planPath(astar_path_planner::PlanPath::Request& req, astar_pat
   return true;
 }
 
-}  // namespace astar_path_planner
+} // namespace astar_path_planner
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   ros::init(argc, argv, "particle_filter_localisation");
 
