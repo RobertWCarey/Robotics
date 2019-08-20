@@ -143,37 +143,35 @@ std::vector<AdjacentCell> OccupancyGrid::getAdjacentCells(int id, bool diagonal_
 
   // YOUR CODE HERE
 
-  WorldPosition curr_worldPos = getWorldPosition(id);
-  double curr_x = curr_worldPos.x;
-  double curr_y = curr_worldPos.y;
   AdjacentCell curr_adjCell;
 
-  std::vector<double> x_pos{curr_x, curr_x + map_.info.resolution, curr_x - map_.info.resolution};
-  std::vector<double> y_pos{curr_y, curr_y + map_.info.resolution, curr_y - map_.info.resolution};
+  std::vector<int> x_pos{grid_position.x, grid_position.x + 1, grid_position.x - 1};
+  std::vector<int> y_pos{grid_position.y, grid_position.y + 1, grid_position.y - 1};
 
-  for (double x : x_pos)
+  for (int x : x_pos)
   {
-    for (double y : y_pos)
+    for (int y : y_pos)
     {
-      curr_adjCell.world_position = {
-          .x = x,
-          .y = y};
+      GridPosition curr_gridPos = {.x = x, .y = y};
 
-      if (!isOutOfBounds(curr_adjCell.world_position) && !isOccupied(curr_adjCell.world_position))
+      curr_adjCell.world_position = getWorldPosition(curr_gridPos);
+
+      if (!isOutOfBounds(curr_gridPos) && !isOccupied(curr_gridPos))
       {
-        curr_adjCell.id = getCellId(getGridPosition(curr_adjCell.world_position));
-        curr_adjCell.cost = std::sqrt(pow(curr_x - x, 2) + pow(curr_y - y, 2));
+        curr_adjCell.id = getCellId(curr_gridPos);
+        curr_adjCell.cost = std::sqrt(pow((grid_position.x - x)*map_.info.resolution, 2) + pow((grid_position.y - y)*map_.info.resolution, 2));
 
         if (curr_adjCell.id != id)
         {
           if (diagonal_movement)
             adjacent_cells.push_back(curr_adjCell);
-          else if (x == curr_x || y == curr_y)
+          else if (x == grid_position.x || y == grid_position.y)
             adjacent_cells.push_back(curr_adjCell);
         }
       }
     }
   }
+
 
   return adjacent_cells;
 }
